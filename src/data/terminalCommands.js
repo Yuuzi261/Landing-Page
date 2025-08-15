@@ -163,7 +163,7 @@ export const commands = {
             if (!dirName) {
                 return `<div class="command-output error">請給我一個資料夾名稱嘛 (´・ω・\`)</div>`;
             }
-            return `<div class="command-output error">權限不足！不准亂碰我的東西 (╬☉д⊙) 你想對 '${dirName}' 做什麼？</div>`;
+            return `<div class="command-output error">權限不足！噗噗～你不會以為真的可以創資料夾吧σ\`∀´)σ</div>`;
         }
     }
 };
