@@ -24,47 +24,47 @@ const createParticles = () => {
     }
 };
 
-const handleMouseMove = (e) => {
-    const cursor = document.createElement('div');
-    cursor.style.cssText = `
-        position: fixed;
-        left: ${e.clientX}px;
-        top: ${e.clientY}px;
-        width: 4px;
-        height: 4px;
-        background: #ff6b9d;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        animation: cursorFade 1s ease-out forwards;
-    `;
+// const handleMouseMove = (e) => {
+//     const cursor = document.createElement('div');
+//     cursor.style.cssText = `
+//         position: fixed;
+//         left: ${e.clientX}px;
+//         top: ${e.clientY}px;
+//         width: 4px;
+//         height: 4px;
+//         background: #ff6b9d;
+//         border-radius: 50%;
+//         pointer-events: none;
+//         z-index: 9999;
+//         animation: cursorFade 1s ease-out forwards;
+//     `;
     
-    // This is a bit inefficient, but it's for a cute effect.
-    // A better implementation might use a single style element.
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes cursorFade {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0); }
-        }
-    `;
-    document.head.appendChild(style);
-    document.body.appendChild(cursor);
+//     // This is a bit inefficient, but it's for a cute effect.
+//     // A better implementation might use a single style element.
+//     const style = document.createElement('style');
+//     style.textContent = `
+//         @keyframes cursorFade {
+//             0% { opacity: 1; transform: scale(1); }
+//             100% { opacity: 0; transform: scale(0); }
+//         }
+//     `;
+//     document.head.appendChild(style);
+//     document.body.appendChild(cursor);
     
-    setTimeout(() => {
-        cursor.remove();
-        style.remove();
-    }, 1000);
-};
+//     setTimeout(() => {
+//         cursor.remove();
+//         style.remove();
+//     }, 1000);
+// };
 
 onMounted(() => {
     createParticles();
-    document.addEventListener('mousemove', handleMouseMove);
+    // document.addEventListener('mousemove', handleMouseMove);
 });
 
-onUnmounted(() => {
-    document.removeEventListener('mousemove', handleMouseMove);
-});
+// onUnmounted(() => {
+//     document.removeEventListener('mousemove', handleMouseMove);
+// });
 </script>
 
 <style>
