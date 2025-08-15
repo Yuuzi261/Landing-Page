@@ -11,7 +11,11 @@ export const commands = {
 <div class="command-output">• whoami - 關於使用者</div>
 <div class="command-output">• cute - 隨機可愛鼓勵訊息 ♡</div>
 <div class="command-output">• fortune - 隨機小語</div>
-<div class="command-output">• cat [檔案] - 顯示檔案內容 (試試 cat readme.txt)</div>
+<div class="command-output">• ls - 列出檔案列表</div>
+<div class="command-output">• pwd - 顯示目前路徑</div>
+<div class="command-output">• cd [路徑] - 切換路徑</div>
+<div class="command-output">• cat [檔案] - 顯示檔案內容</div>
+<div class="command-output">• mkdir [名稱] - 建立資料夾</div>
         `
     },
     about: {
@@ -42,7 +46,7 @@ export const commands = {
         action: () => {
             return { 
                 type: 'clear', 
-                payload: '<div class="command-output">終端機已清空！ ✨</div>' 
+                payload: '<div class="command-output">終端機已清空！ ✨</div>'
             };
         }
     },
@@ -114,20 +118,52 @@ export const commands = {
 <div class="command-output">🤫 secrets.txt</div>
 <div class="command-output">================</div>
 <div class="command-output">你以為這裡會放我的祕密嗎？</div>
-<div class="command-output">才不告訴你咧～( Φ ω Φ )</div>
+<div class="command-output">才不告訴你咧～σ ﾟ∀ ﾟ) ﾟ∀ﾟ)σ</div>
                 `
             };
             
             if (!args || !args[0]) {
-                return '<div class="command-output error">請指定檔案名稱！試試：cat readme.txt</div>';
+                return '<div class="command-output error">請給我一個檔案名稱嘛 (´・ω・\`)</div>';
             }
             
             const filename = args[0];
             if (files[filename]) {
                 return files[filename];
-            } else {
-                return `<div class="command-output error">找不到檔案：${filename}</div><div class="command-output">可用檔案：readme.txt, secrets.txt</div>`;
             }
+            
+            return `<div class="command-output error">找不到檔案：${filename}</div><div class="command-output">可用檔案：readme.txt, secrets.txt</div>`;
+        }
+    },
+    ls: {
+        description: '列出檔案和目錄',
+        action: () => `
+<div class="command-output success">檔案列表 📁</div>
+<div class="command-output" style="color: #87ceeb;">-rw-r--r-- 1 yuuzi yuuzi 1.2K Aug 15 10:30 readme.txt</div>
+<div class="command-output" style="color: #87ceeb;">-rw-r--r-- 1 yuuzi yuuzi  256 Aug 15 11:00 secrets.txt</div>
+        `
+    },
+    pwd: {
+        description: '顯示目前所在目錄',
+        action: () => `<div class="command-output success">/home/user</div>`
+    },
+    cd: {
+        description: '切換目錄',
+        action: (args) => {
+            const path = args.join(' ');
+            if (!path || path === '~' || path === '/') {
+                return `<div class="command-output">你已經在家目錄了呀 (´・ω・\`)</div>`;
+            }
+            return `<div class="command-output error">路徑 '${path}' 不存在！你哪裡都去不了 (つд⊂)</div>`;
+        }
+    },
+    mkdir: {
+        description: '建立目錄',
+        action: (args) => {
+            const dirName = args.join(' ');
+            if (!dirName) {
+                return `<div class="command-output error">請給我一個資料夾名稱嘛 (´・ω・\`)</div>`;
+            }
+            return `<div class="command-output error">權限不足！不准亂碰我的東西 (╬☉д⊙) 你想對 '${dirName}' 做什麼？</div>`;
         }
     }
 };
