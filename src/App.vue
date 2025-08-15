@@ -54,5 +54,17 @@
         },
       ],
     })
+
+    const originalTitle = document.title
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        document.title = '|･ω･｀) 別走嘛．．．'
+      } else {
+        document.title = '(ゝ∀･) 歡迎回來！'
+        setTimeout(() => {
+          document.title = originalTitle
+        }, 1500)
+      }
+    })
   })
 </script>
