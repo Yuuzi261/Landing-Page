@@ -5,8 +5,13 @@
             <div class="terminal-input-line">
                 <span class="prompt">user@cute-terminal:~$</span>
                 <div class="input-wrapper">
-                    <span class="input-text">{{ input }}</span>
-                    <span class="cursor" v-show="isFocused"></span>
+                    <span class="input-text">{{ textBeforeCursor }}</span>
+                    <span 
+                        class="cursor" 
+                        v-show="isFocused" 
+                        :class="{ 'no-blink': isMoving }"
+                    >{{ cursorChar }}</span>
+                    <span class="input-text">{{ textAfterCursor }}</span>
                     <!-- <span class="placeholder" v-if="!input">輸入指令...</span> -->
                     <input 
                         type="text" 
@@ -14,7 +19,10 @@
                         ref="terminalInputRef" 
                         v-model="input" 
                         @keydown="handleKeydown"
-                        @focus="isFocused = true"
+                        @input="updateCursorPosition"
+                        @keyup="updateCursorPosition"
+                        @click="updateCursorPosition"
+                        @focus="handleFocus"
                         @blur="isFocused = false"
                         autocomplete="off"
                     >
@@ -38,15 +46,52 @@ let historyIndex = -1;
 const terminalInputRef = ref(null);
 const terminalOutputRef = ref(null);
 const isFocused = ref(false);
+const isMoving = ref(false);
+let activityTimer = null;
+
+const textBeforeCursor = ref('');
+const cursorChar = ref(' ');
+const textAfterCursor = ref('');
 
 const focusInput = () => {
     terminalInputRef.value?.focus();
 };
 
+const handleFocus = () => {
+    isFocused.value = true;
+    updateCursorPosition();
+};
+
 onMounted(() => {
     focusInput();
-    isFocused.value = true;
 });
+
+const handleUserActivity = () => {
+    isMoving.value = true;
+    clearTimeout(activityTimer);
+    activityTimer = setTimeout(() => {
+        isMoving.value = false;
+    }, 250); // Resume blinking after 250ms of inactivity
+};
+
+const updateCursorPosition = () => {
+    handleUserActivity();
+    nextTick(() => {
+        if (terminalInputRef.value) {
+            const caretPosition = terminalInputRef.value.selectionStart;
+            textBeforeCursor.value = input.value.substring(0, caretPosition);
+            
+            const char = input.value.substring(caretPosition, caretPosition + 1);
+            if (char) {
+                cursorChar.value = char;
+                textAfterCursor.value = input.value.substring(caretPosition + 1);
+            } else {
+                cursorChar.value = ' '; // Use a space for the block cursor at the end
+                textAfterCursor.value = '';
+            }
+        }
+    });
+};
 
 const scrollToBottom = () => {
     nextTick(() => {
@@ -79,18 +124,25 @@ const executeCommand = (commandLine) => {
 };
 
 const handleKeydown = (e) => {
+    handleUserActivity();
     if (e.key === 'Enter') {
         if (input.value.trim()) {
             commandHistory.unshift(input.value);
             historyIndex = -1;
             executeCommand(input.value);
             input.value = '';
+            updateCursorPosition();
         }
     } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (historyIndex < commandHistory.length - 1) {
             historyIndex++;
             input.value = commandHistory[historyIndex];
+            nextTick(() => {
+                const inputEl = terminalInputRef.value;
+                inputEl.selectionStart = inputEl.selectionEnd = input.value.length;
+                updateCursorPosition();
+            });
         }
     } else if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -101,6 +153,11 @@ const handleKeydown = (e) => {
             historyIndex = -1;
             input.value = '';
         }
+        nextTick(() => {
+            const inputEl = terminalInputRef.value;
+            inputEl.selectionStart = inputEl.selectionEnd = input.value.length;
+            updateCursorPosition();
+        });
     }
 };
 </script>
@@ -143,7 +200,8 @@ const handleKeydown = (e) => {
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
     white-space: pre;
-    height: 1.5em; /* Align with cursor */
+    display: inline-block;
+    line-height: 1.5; /* Control height via line-height */
 }
 
 .placeholder {
@@ -175,15 +233,24 @@ const handleKeydown = (e) => {
 
 .cursor {
     display: inline-block;
-    width: 8px;
-    height: 16px;
-    background: #87ceeb;
+    /* background: #87ceeb; */
+    /* color: #1e293b; */
     animation: blink 1s infinite;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.cursor.no-blink {
+    animation: none;
+    background-color: #87ceeb;
+    color: #1e293b;
 }
 
 @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
+    0%, 50% { background-color: #87ceeb; color: #1e293b; }
+    51%, 100% { background-color: transparent; color: inherit; }
 }
 
 /* These styles need to be accessible by v-html */
