@@ -2,32 +2,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap');
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'JetBrains Mono', 'Noto Sans TC', monospace;
-    /* Using the light theme from v2 as the base */
-    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #d4edff 100%);
-    color: #4a90e2;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
+  font-family: 'JetBrains Mono', 'Noto Sans TC', monospace;
+  /* Using the light theme from v2 as the base */
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #d4edff 100%);
+  color: #4a90e2;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    position: relative;
-    z-index: 10;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 10;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
+  .container {
+    padding: 10px;
+  }
 }
