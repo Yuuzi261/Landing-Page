@@ -4,16 +4,21 @@
             <div class="terminal-output" ref="terminalOutputRef" v-html="output"></div>
             <div class="terminal-input-line">
                 <span class="prompt">user@cute-terminal:~$</span>
-                <input 
-                    type="text" 
-                    class="terminal-input" 
-                    ref="terminalInputRef" 
-                    v-model="input" 
-                    @keydown="handleKeydown"
-                    placeholder="輸入指令..." 
-                    autocomplete="off"
-                >
-                <span class="cursor"></span>
+                <div class="input-wrapper">
+                    <span class="input-text">{{ input }}</span>
+                    <span class="cursor" v-show="isFocused"></span>
+                    <!-- <span class="placeholder" v-if="!input">輸入指令...</span> -->
+                    <input 
+                        type="text" 
+                        class="terminal-input" 
+                        ref="terminalInputRef" 
+                        v-model="input" 
+                        @keydown="handleKeydown"
+                        @focus="isFocused = true"
+                        @blur="isFocused = false"
+                        autocomplete="off"
+                    >
+                </div>
             </div>
         </div>
     </TerminalWindow>
@@ -32,6 +37,7 @@ let historyIndex = -1;
 
 const terminalInputRef = ref(null);
 const terminalOutputRef = ref(null);
+const isFocused = ref(false);
 
 const focusInput = () => {
     terminalInputRef.value?.focus();
@@ -39,6 +45,7 @@ const focusInput = () => {
 
 onMounted(() => {
     focusInput();
+    isFocused.value = true;
 });
 
 const scrollToBottom = () => {
@@ -100,7 +107,6 @@ const handleKeydown = (e) => {
 
 <style scoped>
 .interactive-terminal {
-    /* This container is now mainly for the click event */
     cursor: text;
 }
 
@@ -125,12 +131,44 @@ const handleKeydown = (e) => {
     flex-shrink: 0;
 }
 
-.terminal-input {
+.input-wrapper {
+    position: relative;
     flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.input-text {
+    color: #5a6c7d;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    white-space: pre;
+    height: 1.5em; /* Align with cursor */
+}
+
+.placeholder {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5a6c7d;
+    opacity: 0.5;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+}
+
+.terminal-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: transparent;
     border: none;
     outline: none;
-    color: #5a6c7d;
+    color: transparent;
+    caret-color: transparent;
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
 }

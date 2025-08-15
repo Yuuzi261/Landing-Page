@@ -20,7 +20,7 @@ export const commands = {
 <div class="command-output success">關於我 ♡</div>
 <div class="command-output">嗨！我是一個熱愛程式設計的開發者</div>
 <div class="command-output">專精不明、想到什麼就做什麼</div>
-<div class="command-output">喜歡可愛的東西，可愛就是正義 (*´∀	)~♥</div>
+<div class="command-output">喜歡可愛的東西，可愛就是正義 (*´∀\`)~♥</div>
 <div class="command-output">最愛的程式語言：Python, Vue.js, C++</div>
 <div class="command-output">興趣：寫程式、看動漫、攝取咖啡因☕✨</div>
         `
