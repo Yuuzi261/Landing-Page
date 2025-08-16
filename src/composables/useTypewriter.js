@@ -1,80 +1,70 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 /**
- * A Vue Composable for creating a typewriter effect.
- * @param {import('vue').Ref<string[]> | string[]} linesRef - A ref or array of strings to type out.
+ * A Vue Composable for creating a cyclical typewriter effect.
+ * @param {string[]} sentences - An array of strings to type out cyclically.
  * @param {object} options - Configuration options.
- * @param {number} [options.typingSpeed=50] - Speed of typing in ms.
- * @param {number} [options.lineDelay=400] - Delay before starting a new line in ms.
+ * @param {boolean} [options.loop=false] - Whether to loop through the sentences indefinitely.
+ * @param {number} [options.typingSpeed=150] - Speed of typing in ms.
+ * @param {number} [options.deletingSpeed=75] - Speed of deleting in ms.
+ * @param {number} [options.delay=1000] - Delay in ms after a sentence is typed before it starts deleting.
  */
-export function useTypewriter(linesRef, options = {}) {
-  const { typingSpeed = 50, lineDelay = 400 } = options
 
-  const typedContent = ref('')
-  const isFinished = ref(false)
-  const internalLines = ref(Array.isArray(linesRef) ? linesRef : linesRef.value)
+export function useTypewriter(sentences, options = {}) {
+  const { loop = false, typingSpeed = 150, deletingSpeed = 75, delay = 1000 } = options
 
-  const type = () => {
-    let lineIndex = 0
-    let charIndex = 0
-    let currentHtml = ''
-    isFinished.value = false
+  const typedText = ref('')
+  const sentenceIndex = ref(0)
+  let typingTimeout
+  let deletingTimeout
 
-    const typeChar = () => {
-      if (lineIndex >= internalLines.value.length) {
-        // Typing finished for all lines
-        typedContent.value = currentHtml.trim().replace(/<br>$/, '') // Remove trailing <br>
-        isFinished.value = true
-        return
-      }
-
-      const currentLine = internalLines.value[lineIndex]
-      if (charIndex >= currentLine.length) {
-        // End of line
-        lineIndex++
-        charIndex = 0
-        currentHtml += '<br>'
-        setTimeout(typeChar, lineDelay)
-        return
-      }
-
-      const char = currentLine[charIndex]
-      let nextCharIndex = charIndex + 1
-
-      // Handle HTML tags: find the closing '>' and treat the whole tag as one "character"
-      if (char === '<') {
-        const tagEndIndex = currentLine.indexOf('>', charIndex)
-        if (tagEndIndex !== -1) {
-          currentHtml += currentLine.substring(charIndex, tagEndIndex + 1)
-          nextCharIndex = tagEndIndex + 1
-        } else {
-          currentHtml += char // Fallback for malformed tags
-        }
+  const typeSentence = (sentence) => {
+    if (!sentence) return
+    let i = 0
+    typedText.value = '' // Clear before typing new sentence
+    const type = () => {
+      if (i < sentence.length) {
+        typedText.value += sentence.charAt(i)
+        i++
+        typingTimeout = setTimeout(type, typingSpeed)
       } else {
-        currentHtml += char
+        deletingTimeout = setTimeout(deleteSentence, delay)
       }
-
-      // Update content with cursor
-      typedContent.value = currentHtml + '<span class="typing-cursor"></span>'
-      charIndex = nextCharIndex
-
-      setTimeout(typeChar, typingSpeed)
     }
-
-    typeChar()
+    type()
   }
 
-  onMounted(type)
+  const deleteSentence = () => {
+    const del = () => {
+      if (typedText.value.length > 0) {
+        typedText.value = typedText.value.slice(0, -1)
+        deletingTimeout = setTimeout(del, deletingSpeed)
+      } else {
+        sentenceIndex.value++
+        if (sentenceIndex.value >= sentences.length) {
+          if (loop) {
+            sentenceIndex.value = 0
+          } else {
+            return // Stop if not looping
+          }
+        }
+        // Start typing the next sentence
+        typingTimeout = setTimeout(() => typeSentence(sentences[sentenceIndex.value]), 500)
+      }
+    }
+    del()
+  }
 
-  // If the source lines change, re-trigger the animation
-  watch(
-    linesRef,
-    (newLines) => {
-      internalLines.value = newLines
-      type()
-    },
-    { deep: true }
-  )
+  onMounted(() => {
+    if (sentences && sentences.length > 0) {
+      typeSentence(sentences[sentenceIndex.value])
+    }
+  })
 
-  return { typedContent, isFinished }
+  onUnmounted(() => {
+    clearTimeout(typingTimeout)
+    clearTimeout(deletingTimeout)
+  })
+
+  return { typedText }
 }
