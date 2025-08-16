@@ -16,8 +16,8 @@
 
 <script setup>
   import { ref, watch } from 'vue'
-  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
-  import { useTypewriter } from '../composables/useTypewriter.js'
+  import { useIntersectionObserver } from '@/composables/useIntersectionObserver.js'
+  import { useTypewriter } from '@/composables/useTypewriter.js'
 
   const elementRef = ref(null)
   const hasTypingPlayedOnce = ref(false)

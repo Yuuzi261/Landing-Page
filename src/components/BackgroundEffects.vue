@@ -4,7 +4,7 @@
 
 <script setup>
   import { onMounted } from 'vue'
-  import { getEffectsImageUrl } from '../utils/getEffectsImageUrl.js'
+  import { getEffectsImageUrl } from '@/utils/getEffectsImageUrl.js'
 
   const resetParticle = (particle) => {
     // Reset animation to allow re-triggering

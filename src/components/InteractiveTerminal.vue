@@ -36,10 +36,10 @@
 
 <script setup>
   import { ref, onMounted, nextTick, watch } from 'vue'
-  import TerminalWindow from './TerminalWindow.vue'
-  import { commands } from '../data/terminalCommands.js'
-  import { welcomeMessage } from '../data/terminalContent.js'
-  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+  import TerminalWindow from '@/components/TerminalWindow.vue'
+  import { commands } from '@/data/terminalCommands.js'
+  import { welcomeMessage } from '@/data/terminalContent.js'
+  import { useIntersectionObserver } from '@/composables/useIntersectionObserver.js'
 
   const elementRef = ref(null)
   const output = ref('')

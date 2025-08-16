@@ -25,14 +25,10 @@
 
 <script setup>
   import { ref, onMounted, onUnmounted } from 'vue'
-  import { useTypewriter } from '../composables/useTypewriter.js'
+  import { useTypewriter } from '@/composables/useTypewriter.js'
   import backgroundImage from '/background.webp'
 
-  const sentences = [
-    "Hello, I'm Yuuzi.",
-    'こにちは、ゆうじです。',
-    '你好，我是 Yuuzi。'
-  ]
+  const sentences = ["Hello, I'm Yuuzi.", 'こにちは、ゆうじです。', '你好，我是 Yuuzi。']
 
   const { typedText } = useTypewriter(sentences, {
     loop: true,

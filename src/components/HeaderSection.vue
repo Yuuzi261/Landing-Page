@@ -26,10 +26,10 @@
 </template>
 
 <script setup>
-  import TerminalWindow from './TerminalWindow.vue'
+  import TerminalWindow from '@/components/TerminalWindow.vue'
   import { ref } from 'vue'
-  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
-  import { useTypewriter } from '../composables/useTypewriter.js'
+  import { useIntersectionObserver } from '@/composables/useIntersectionObserver.js'
+  import { useTypewriter } from '@/composables/useTypewriter.js'
 
   const elementRef = ref(null)
   const commandToType = ' whoami'

@@ -17,7 +17,7 @@
 
 <script setup>
   import { ref } from 'vue'
-  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+  import { useIntersectionObserver } from '@/composables/useIntersectionObserver.js'
 
   const elementRef = ref(null)
   const { isVisible } = useIntersectionObserver(elementRef)
