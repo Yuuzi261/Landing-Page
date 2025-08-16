@@ -3,12 +3,12 @@
     <TerminalWindow title="cute_terminal.sh" emoji="♡">
       <div style="color: #4a90e2; margin-bottom: 20px">
         <span class="prompt">yuuzi@cute-terminal:~$</span>
-        <span style="color: #87ceeb">{{ typedCommand }}</span>
-        <span class="typing-cursor" :style="{ visibility: showCursor ? 'visible' : 'hidden' }"></span>
+        <span style="color: #87ceeb">{{ typedText }}</span>
+        <span class="typing-cursor" v-if="showCursor"></span>
       </div>
       <div
         class="content-container"
-        :class="{ 'is-visible': isCommandFinished }"
+        :class="{ 'is-visible': isFinished }"
         style="margin: 20px 0; color: #5a6c7d; line-height: 1.6"
       >
         <div>
@@ -29,35 +29,22 @@
   import TerminalWindow from './TerminalWindow.vue'
   import { ref } from 'vue'
   import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+  import { useTypewriter } from '../composables/useTypewriter.js'
 
   const elementRef = ref(null)
-  const typedCommand = ref('')
-  const showCursor = ref(false)
-  const isCommandFinished = ref(false)
-  const hasTypingPlayedOnce = ref(false) // Tracks if the typing animation has played
   const commandToType = ' whoami'
+  const hasTypingPlayedOnce = ref(false)
+
+  const { typedText, isFinished, showCursor, start } = useTypewriter(commandToType, {
+    manualStart: true,
+    typingSpeed: 150,
+  })
 
   const startTypingAnimation = () => {
-    // Only play the typing animation once
     if (hasTypingPlayedOnce.value) return
     hasTypingPlayedOnce.value = true
-    showCursor.value = true
-
-    setTimeout(() => {
-      let i = 0
-      const intervalId = setInterval(() => {
-        if (i < commandToType.length) {
-          typedCommand.value += commandToType[i]
-          i++
-        } else {
-          clearInterval(intervalId)
-          // Keep the cursor blinking after typing is done
-          setTimeout(() => {
-            isCommandFinished.value = true
-          }, 300)
-        }
-      }, 150)
-    }, 300) // Delay after slide-in before typing
+    // A short delay before starting the typing animation
+    setTimeout(start, 300)
   }
 
   const { isVisible } = useIntersectionObserver(elementRef, startTypingAnimation)

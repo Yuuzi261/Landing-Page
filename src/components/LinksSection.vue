@@ -3,11 +3,11 @@
     <TerminalWindow title="my_links.json" emoji="✨">
       <div style="color: #4a90e2; margin-bottom: 20px">
         <span class="prompt">yuuzi@cute-terminal:~$</span>
-        <span style="color: #87ceeb">{{ typedCommand }}</span>
-        <span class="typing-cursor" :style="{ visibility: showCursor ? 'visible' : 'hidden' }"></span>
+        <span style="color: #87ceeb">{{ typedText }}</span>
+        <span class="typing-cursor" v-if="showCursor"></span>
       </div>
 
-      <div class="links-grid content-container" :class="{ 'is-visible': isCommandFinished }">
+      <div class="links-grid content-container" :class="{ 'is-visible': isFinished }">
         <div class="link-card" v-for="link in links" :key="link.title" @click="openLink(link.url)">
           <div class="link-icon">{{ link.icon }}</div>
           <div class="link-title">{{ link.title }}</div>
@@ -24,34 +24,21 @@
   import links from '../data/links.js'
   import { ref } from 'vue'
   import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+  import { useTypewriter } from '../composables/useTypewriter.js'
 
   const elementRef = ref(null)
-  const typedCommand = ref('')
-  const showCursor = ref(false)
-  const isCommandFinished = ref(false)
-  const hasTypingPlayedOnce = ref(false)
   const commandToType = ' cat my_links.json'
+  const hasTypingPlayedOnce = ref(false)
+
+  const { typedText, isFinished, showCursor, start } = useTypewriter(commandToType, {
+    manualStart: true,
+    typingSpeed: 100,
+  })
 
   const startTypingAnimation = () => {
     if (hasTypingPlayedOnce.value) return
     hasTypingPlayedOnce.value = true
-    showCursor.value = true
-
-    setTimeout(() => {
-      let i = 0
-      const intervalId = setInterval(() => {
-        if (i < commandToType.length) {
-          typedCommand.value += commandToType[i]
-          i++
-        } else {
-          clearInterval(intervalId)
-          // Keep cursor blinking
-          setTimeout(() => {
-            isCommandFinished.value = true
-          }, 300)
-        }
-      }, 100)
-    }, 300)
+    setTimeout(start, 300)
   }
 
   const { isVisible } = useIntersectionObserver(elementRef, startTypingAnimation)

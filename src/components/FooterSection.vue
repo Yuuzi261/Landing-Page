@@ -3,10 +3,10 @@
     <div class="footer">
       <div>
         <span class="prompt">yuuzi@cute-terminal:~$</span>
-        <span v-html="typedCommand"></span>
-        <span class="typing-cursor" :style="{ visibility: showCursor ? 'visible' : 'hidden' }"></span>
+        <span v-html="typedText"></span>
+        <span class="typing-cursor" v-if="showCursor"></span>
       </div>
-      <div class="content-container" :class="{ 'is-visible': isCommandFinished }">
+      <div class="content-container" :class="{ 'is-visible': isFinished }">
         <br />
         <span style="color: #87ceeb">Made with ♡ and lots of caffeine ☕</span>
       </div>
@@ -15,43 +15,31 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+  import { useTypewriter } from '../composables/useTypewriter.js'
 
   const elementRef = ref(null)
-  const typedCommand = ref('')
-  const showCursor = ref(false)
-  const isCommandFinished = ref(false)
   const hasTypingPlayedOnce = ref(false)
   const commandToType = ' echo "Thanks for visiting! <span class=\'cute-emoji\'>♡(˃͈ દ ˂͈ ♡)</span>"'
+
+  const { typedText, isFinished, showCursor, start } = useTypewriter(commandToType, {
+    manualStart: true,
+    typingSpeed: 80,
+    html: true,
+  })
+
+  // Hides the cursor when finished.
+  watch(isFinished, (finished) => {
+    if (finished) {
+      showCursor.value = false
+    }
+  })
 
   const startTypingAnimation = () => {
     if (hasTypingPlayedOnce.value) return
     hasTypingPlayedOnce.value = true
-    showCursor.value = true
-
-    setTimeout(() => {
-      let i = 0
-      const intervalId = setInterval(() => {
-        if (i >= commandToType.length) {
-          clearInterval(intervalId)
-          showCursor.value = false
-          setTimeout(() => {
-            isCommandFinished.value = true
-          }, 200)
-          return
-        }
-
-        if (commandToType[i] === '<') {
-          const endIndex = commandToType.indexOf('>', i)
-          typedCommand.value += commandToType.substring(i, endIndex + 1)
-          i = endIndex + 1
-        } else {
-          typedCommand.value += commandToType[i]
-          i++
-        }
-      }, 80)
-    }, 300)
+    setTimeout(start, 300)
   }
 
   const { isVisible } = useIntersectionObserver(elementRef, startTypingAnimation)
