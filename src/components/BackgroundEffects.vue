@@ -6,6 +6,27 @@
   import { onMounted } from 'vue'
   import { getEffectsImageUrl } from '../utils/getEffectsImageUrl.js'
 
+  const resetParticle = (particle) => {
+    // Reset animation to allow re-triggering
+    particle.classList.remove('animate-float')
+    // Force reflow to make sure the class removal is registered
+    void particle.offsetWidth
+
+    // Re-randomize properties
+    particle.style.left = Math.random() * 100 + '%'
+    particle.style.top = Math.random() * 110 - 10 + '%' // Allow starting from slightly off-screen
+    particle.style.animationDelay = Math.random() * 2 + 's' // Shorter delay for respawn
+    particle.style.animationDuration = Math.random() * 8 + 7 + 's' // Random duration between 7s and 15s
+    particle.style.width = Math.floor(Math.random() * 20 + 15) + 'px'
+
+    // Set random direction for the animation
+    particle.style.setProperty('--random-x', Math.random() > 0.5 ? 1 : -1)
+    particle.style.setProperty('--random-y', Math.random() > 0.5 ? 1 : -1)
+
+    // Add the class back to start the animation again
+    particle.classList.add('animate-float')
+  }
+
   const createParticles = () => {
     const particles = document.getElementById('particles')
     if (!particles) return
@@ -19,12 +40,14 @@
 
       particle.className = 'particle'
       particle.src = getEffectsImageUrl(`effect${imageIndex}`)
-      particle.style.left = Math.random() * 100 + '%'
-      particle.style.top = Math.random() * 100 + '%'
-      particle.style.animationDelay = Math.random() * 8 + 's'
-      particle.style.animationDuration = Math.random() * 5 + 5 + 's' // Slower, more gentle animation
-      particle.style.width = Math.floor(Math.random() * 20 + 15) + 'px' // Random size between 15px and 35px
 
+      // Listen for the end of the animation
+      particle.addEventListener('animationend', () => {
+        resetParticle(particle)
+      })
+
+      // Initial setup
+      resetParticle(particle)
       particles.appendChild(particle)
     }
   }
@@ -48,27 +71,31 @@
 
   .particle {
     position: absolute;
-    animation: float 10s ease-in-out infinite;
     opacity: 0;
-    height: auto; /* Maintain aspect ratio */
+    height: auto;
   }
 
-  @keyframes float {
+  .particle.animate-float {
+    animation: float-once linear forwards;
+  }
+
+  @keyframes float-once {
     0% {
-      transform: translateY(20px) rotate(0deg) scale(1);
+      transform: translateX(0) translateY(0) rotate(0deg) scale(0.8);
       opacity: 0;
     }
-    10% {
-        opacity: 0.6; /* Fade in */
+    15% {
+      opacity: 0.7; /* Fade in */
     }
     50% {
-      transform: translateY(-25px) rotate(180deg) scale(1.1);
+      /* Move to a different position mid-animation for more randomness */
+      transform: translateX(calc(var(--random-x, 1) * 40px)) translateY(calc(var(--random-y, 1) * -60px)) rotate(180deg) scale(1.1);
     }
-    90% {
-        opacity: 0.6; /* Fade out */
+    85% {
+      opacity: 0.7; /* Start fading out */
     }
     100% {
-      transform: translateY(20px) rotate(360deg) scale(1);
+      transform: translateX(calc(var(--random-x, 1) * 80px)) translateY(calc(var(--random-y, 1) * -120px)) rotate(360deg) scale(0.8);
       opacity: 0;
     }
   }
