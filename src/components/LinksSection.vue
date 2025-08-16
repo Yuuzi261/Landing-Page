@@ -4,7 +4,7 @@
       <div style="color: #4a90e2; margin-bottom: 20px">
         <span class="prompt">yuuzi@cute-terminal:~$</span>
         <span style="color: #87ceeb">{{ typedCommand }}</span>
-        <span class="typing-cursor" v-if="showCursor"></span>
+        <span class="typing-cursor" :style="{ visibility: showCursor ? 'visible' : 'hidden' }"></span>
       </div>
 
       <div class="links-grid content-container" :class="{ 'is-visible': isCommandFinished }">

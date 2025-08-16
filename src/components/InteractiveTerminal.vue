@@ -7,7 +7,12 @@
           <span class="prompt">user@cute-terminal:~$</span>
           <div class="input-wrapper">
             <span class="input-text">{{ textBeforeCursor }}</span>
-            <span class="cursor" v-show="isFocused" :class="{ 'no-blink': isMoving }">{{ cursorChar }}</span>
+            <span
+              class="cursor"
+              :style="{ visibility: isFocused ? 'visible' : 'hidden' }"
+              :class="{ 'no-blink': isMoving }"
+              >{{ cursorChar }}</span
+            >
             <span class="input-text">{{ textAfterCursor }}</span>
             <input
               type="text"
@@ -67,9 +72,7 @@
     output.value = welcomeMessage
   })
 
-  const { isVisible } = useIntersectionObserver(elementRef, () => {
-    focusInput()
-  })
+  const { isVisible } = useIntersectionObserver(elementRef)
 
   // When the element is not visible, we can optionally blur the input
   watch(isVisible, (newValue) => {
