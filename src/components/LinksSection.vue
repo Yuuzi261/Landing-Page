@@ -7,7 +7,7 @@
         <span class="typing-cursor" v-if="showCursor"></span>
       </div>
 
-      <div v-if="isCommandFinished" class="links-grid content-fade-in">
+      <div class="links-grid content-container" :class="{ 'is-visible': isCommandFinished }">
         <div class="link-card" v-for="link in links" :key="link.title" @click="openLink(link.url)">
           <div class="link-icon">{{ link.icon }}</div>
           <div class="link-title">{{ link.title }}</div>
@@ -27,14 +27,15 @@
 
   const elementRef = ref(null)
   const typedCommand = ref('')
-  const showCursor = ref(true)
+  const showCursor = ref(false)
   const isCommandFinished = ref(false)
-  const hasTypingStarted = ref(false)
+  const hasTypingPlayedOnce = ref(false)
   const commandToType = ' cat my_links.json'
 
   const startTypingAnimation = () => {
-    if (hasTypingStarted.value) return
-    hasTypingStarted.value = true
+    if (hasTypingPlayedOnce.value) return
+    hasTypingPlayedOnce.value = true
+    showCursor.value = true
 
     setTimeout(() => {
       let i = 0
@@ -44,7 +45,7 @@
           i++
         } else {
           clearInterval(intervalId)
-          showCursor.value = false
+          // Keep cursor blinking
           setTimeout(() => {
             isCommandFinished.value = true
           }, 300)

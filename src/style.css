@@ -34,6 +34,18 @@ body {
     transform 0.7s ease-out;
 }
 
+/* Content visibility control to prevent layout shift */
+.content-container {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease-out 0.2s; /* Add a small delay */
+}
+
+.content-container.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
 .scroll-animate.is-visible {
   opacity: 1;
   transform: translateY(0);

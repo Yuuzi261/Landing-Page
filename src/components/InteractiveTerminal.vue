@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, nextTick } from 'vue'
+  import { ref, onMounted, nextTick, watch } from 'vue'
   import TerminalWindow from './TerminalWindow.vue'
   import { commands } from '../data/terminalCommands.js'
   import { welcomeMessage } from '../data/terminalContent.js'
@@ -64,13 +64,18 @@
   }
 
   onMounted(() => {
-    // Initialize output with the welcome message
     output.value = welcomeMessage
   })
 
-  // Trigger focus when the element becomes visible
   const { isVisible } = useIntersectionObserver(elementRef, () => {
     focusInput()
+  })
+
+  // When the element is not visible, we can optionally blur the input
+  watch(isVisible, (newValue) => {
+    if (!newValue && terminalInputRef.value) {
+      terminalInputRef.value.blur()
+    }
   })
 
   const handleUserActivity = () => {
@@ -119,7 +124,7 @@
       const result = commands[command].action(commandArgs)
       if (result) {
         if (typeof result === 'object' && result.type === 'clear') {
-          output.value = welcomeMessage // Reset to the initial message
+          output.value = welcomeMessage
         } else {
           output.value += result
         }

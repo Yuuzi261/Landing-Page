@@ -6,14 +6,18 @@
         <span style="color: #87ceeb">{{ typedCommand }}</span>
         <span class="typing-cursor" v-if="showCursor"></span>
       </div>
-      <div v-if="isCommandFinished" style="margin: 20px 0; color: #5a6c7d; line-height: 1.6">
-        <div class="content-fade-in">
+      <div
+        class="content-container"
+        :class="{ 'is-visible': isCommandFinished }"
+        style="margin: 20px 0; color: #5a6c7d; line-height: 1.6"
+      >
+        <div>
           嗨！我是Yuuzi <span class="cute-emoji">( ˶ᵔ ᵕ ᵔ˶ )</span><br />
           歡迎來到我的個人網站！<br />
           這裡收藏了我在網路世界的各種足跡～
         </div>
         <br />
-        <div class="content-fade-in" style="animation-delay: 0.5s">
+        <div style="transition-delay: 0.4s">
           <span style="color: #87ceeb; font-size: 12px">💡 提示：下面的終端機可以真的打指令喔！試試看 help 指令</span>
         </div>
       </div>
@@ -28,14 +32,16 @@
 
   const elementRef = ref(null)
   const typedCommand = ref('')
-  const showCursor = ref(true)
+  const showCursor = ref(false)
   const isCommandFinished = ref(false)
-  const hasTypingStarted = ref(false)
+  const hasTypingPlayedOnce = ref(false) // Tracks if the typing animation has played
   const commandToType = ' whoami'
 
   const startTypingAnimation = () => {
-    if (hasTypingStarted.value) return
-    hasTypingStarted.value = true
+    // Only play the typing animation once
+    if (hasTypingPlayedOnce.value) return
+    hasTypingPlayedOnce.value = true
+    showCursor.value = true
 
     setTimeout(() => {
       let i = 0
@@ -45,7 +51,7 @@
           i++
         } else {
           clearInterval(intervalId)
-          showCursor.value = false
+          // Keep the cursor blinking after typing is done
           setTimeout(() => {
             isCommandFinished.value = true
           }, 300)
