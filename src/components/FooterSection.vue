@@ -1,10 +1,61 @@
 <template>
-  <div class="footer">
-    <span class="prompt">yuuzi@cute-terminal:~$</span> echo "Thanks for visiting!
-    <span class="cute-emoji">♡(˃͈ દ ˂͈ ♡)</span>"<br /><br />
-    <span style="color: #87ceeb">Made with ♡ and lots of caffeine ☕</span>
+  <div ref="elementRef" class="scroll-animate" :class="{ 'is-visible': isVisible }">
+    <div class="footer">
+      <div>
+        <span class="prompt">yuuzi@cute-terminal:~$</span>
+        <span v-html="typedCommand"></span>
+        <span class="typing-cursor" v-if="showCursor"></span>
+      </div>
+      <div v-if="isCommandFinished" class="content-fade-in" style="animation-delay: 0.2s">
+        <br />
+        <span style="color: #87ceeb">Made with ♡ and lots of caffeine ☕</span>
+      </div>
+    </div>
   </div>
 </template>
+
+<script setup>
+  import { ref } from 'vue'
+  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+
+  const elementRef = ref(null)
+  const typedCommand = ref('')
+  const showCursor = ref(true)
+  const isCommandFinished = ref(false)
+  const hasTypingStarted = ref(false)
+  const commandToType = ' echo "Thanks for visiting! <span class=\'cute-emoji\'>♡(˃͈ દ ˂͈ ♡)</span>"'
+
+  const startTypingAnimation = () => {
+    if (hasTypingStarted.value) return
+    hasTypingStarted.value = true
+
+    setTimeout(() => {
+      let i = 0
+      const intervalId = setInterval(() => {
+        if (i >= commandToType.length) {
+          clearInterval(intervalId)
+          showCursor.value = false
+          setTimeout(() => {
+            isCommandFinished.value = true
+          }, 200)
+          return
+        }
+
+        // This is a simplified parser, it just skips the whole HTML tag
+        if (commandToType[i] === '<') {
+          const endIndex = commandToType.indexOf('>', i)
+          typedCommand.value += commandToType.substring(i, endIndex + 1)
+          i = endIndex + 1
+        } else {
+          typedCommand.value += commandToType[i]
+          i++
+        }
+      }, 80)
+    }, 300)
+  }
+
+  const { isVisible } = useIntersectionObserver(elementRef, startTypingAnimation)
+</script>
 
 <style scoped>
   .footer {
@@ -22,7 +73,7 @@
     font-weight: 600;
   }
 
-  .cute-emoji {
+  :deep(.cute-emoji) {
     display: inline-block;
     animation: wiggle 2s ease-in-out infinite;
   }

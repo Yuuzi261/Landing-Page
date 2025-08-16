@@ -19,6 +19,7 @@
 
   import { onMounted } from 'vue'
   import firework from 'mouse-firework'
+
   onMounted(() => {
     firework({
       excludeElements: ['a'],

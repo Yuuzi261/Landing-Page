@@ -1,6 +1,7 @@
 <template>
-  <div class="ascii-art-container">
-    <pre class="ascii-art">
+  <div ref="elementRef" class="scroll-animate" :class="{ 'is-visible': isVisible }">
+    <div class="ascii-art-container">
+      <pre class="ascii-art">
   ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡
 ♡     ╭───────────────────────────────────────╮     ♡
                           My Links!             
@@ -9,9 +10,18 @@
         -(((---(((--------     ♡ ♡ ♡             
 ♡     ╰───────────────────────────────────────╯     ♡
   ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡ ♡</pre
-    >
+      >
+    </div>
   </div>
 </template>
+
+<script setup>
+  import { ref } from 'vue'
+  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+
+  const elementRef = ref(null)
+  const { isVisible } = useIntersectionObserver(elementRef)
+</script>
 
 <style scoped>
   .ascii-art-container {

@@ -1,31 +1,32 @@
 <template>
-  <TerminalWindow title="interactive_terminal.sh" emoji="🖥️">
-    <div class="interactive-terminal" @click="focusInput">
-      <div class="terminal-output" ref="terminalOutputRef" v-html="output"></div>
-      <div class="terminal-input-line">
-        <span class="prompt">user@cute-terminal:~$</span>
-        <div class="input-wrapper">
-          <span class="input-text">{{ textBeforeCursor }}</span>
-          <span class="cursor" v-show="isFocused" :class="{ 'no-blink': isMoving }">{{ cursorChar }}</span>
-          <span class="input-text">{{ textAfterCursor }}</span>
-          <!-- <span class="placeholder" v-if="!input">輸入指令...</span> -->
-          <input
-            type="text"
-            class="terminal-input"
-            ref="terminalInputRef"
-            v-model="input"
-            @keydown="handleKeydown"
-            @input="updateCursorPosition"
-            @keyup="updateCursorPosition"
-            @click="updateCursorPosition"
-            @focus="handleFocus"
-            @blur="isFocused = false"
-            autocomplete="off"
-          />
+  <div ref="elementRef" class="scroll-animate" :class="{ 'is-visible': isVisible }">
+    <TerminalWindow title="interactive_terminal.sh" emoji="🖥️">
+      <div class="interactive-terminal" @click="focusInput">
+        <div class="terminal-output content-fade-in" ref="terminalOutputRef" v-html="output"></div>
+        <div class="terminal-input-line content-fade-in" style="animation-delay: 0.3s">
+          <span class="prompt">user@cute-terminal:~$</span>
+          <div class="input-wrapper">
+            <span class="input-text">{{ textBeforeCursor }}</span>
+            <span class="cursor" v-show="isFocused" :class="{ 'no-blink': isMoving }">{{ cursorChar }}</span>
+            <span class="input-text">{{ textAfterCursor }}</span>
+            <input
+              type="text"
+              class="terminal-input"
+              ref="terminalInputRef"
+              v-model="input"
+              @keydown="handleKeydown"
+              @input="updateCursorPosition"
+              @keyup="updateCursorPosition"
+              @click="updateCursorPosition"
+              @focus="handleFocus"
+              @blur="isFocused = false"
+              autocomplete="off"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </TerminalWindow>
+    </TerminalWindow>
+  </div>
 </template>
 
 <script setup>
@@ -33,8 +34,10 @@
   import TerminalWindow from './TerminalWindow.vue'
   import { commands } from '../data/terminalCommands.js'
   import { welcomeMessage } from '../data/terminalContent.js'
+  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
 
-  const output = ref(welcomeMessage)
+  const elementRef = ref(null)
+  const output = ref('')
   const input = ref('')
   const commandHistory = []
   let historyIndex = -1
@@ -50,7 +53,9 @@
   const textAfterCursor = ref('')
 
   const focusInput = () => {
-    terminalInputRef.value?.focus()
+    setTimeout(() => {
+      terminalInputRef.value?.focus()
+    }, 400)
   }
 
   const handleFocus = () => {
@@ -59,6 +64,12 @@
   }
 
   onMounted(() => {
+    // Initialize output with the welcome message
+    output.value = welcomeMessage
+  })
+
+  // Trigger focus when the element becomes visible
+  const { isVisible } = useIntersectionObserver(elementRef, () => {
     focusInput()
   })
 
@@ -108,7 +119,7 @@
       const result = commands[command].action(commandArgs)
       if (result) {
         if (typeof result === 'object' && result.type === 'clear') {
-          output.value = result.payload
+          output.value = welcomeMessage // Reset to the initial message
         } else {
           output.value += result
         }

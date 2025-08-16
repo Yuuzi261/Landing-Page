@@ -1,23 +1,59 @@
 <template>
-  <TerminalWindow title="my_links.json" emoji="✨">
-    <div style="color: #4a90e2; margin-bottom: 20px">
-      <span class="prompt">yuuzi@cute-terminal:~$</span> <span style="color: #87ceeb">cat my_links.json</span>
-    </div>
-
-    <div class="links-grid">
-      <div class="link-card" v-for="link in links" :key="link.title" @click="openLink(link.url)">
-        <div class="link-icon">{{ link.icon }}</div>
-        <div class="link-title">{{ link.title }}</div>
-        <div class="link-description">{{ link.description }}</div>
-        <div class="link-url">{{ link.displayUrl }}</div>
+  <div ref="elementRef" class="scroll-animate" :class="{ 'is-visible': isVisible }">
+    <TerminalWindow title="my_links.json" emoji="✨">
+      <div style="color: #4a90e2; margin-bottom: 20px">
+        <span class="prompt">yuuzi@cute-terminal:~$</span>
+        <span style="color: #87ceeb">{{ typedCommand }}</span>
+        <span class="typing-cursor" v-if="showCursor"></span>
       </div>
-    </div>
-  </TerminalWindow>
+
+      <div v-if="isCommandFinished" class="links-grid content-fade-in">
+        <div class="link-card" v-for="link in links" :key="link.title" @click="openLink(link.url)">
+          <div class="link-icon">{{ link.icon }}</div>
+          <div class="link-title">{{ link.title }}</div>
+          <div class="link-description">{{ link.description }}</div>
+          <div class="link-url">{{ link.displayUrl }}</div>
+        </div>
+      </div>
+    </TerminalWindow>
+  </div>
 </template>
 
 <script setup>
   import TerminalWindow from './TerminalWindow.vue'
   import links from '../data/links.js'
+  import { ref } from 'vue'
+  import { useIntersectionObserver } from '../composables/useIntersectionObserver.js'
+
+  const elementRef = ref(null)
+  const typedCommand = ref('')
+  const showCursor = ref(true)
+  const isCommandFinished = ref(false)
+  const hasTypingStarted = ref(false)
+  const commandToType = ' cat my_links.json'
+
+  const startTypingAnimation = () => {
+    if (hasTypingStarted.value) return
+    hasTypingStarted.value = true
+
+    setTimeout(() => {
+      let i = 0
+      const intervalId = setInterval(() => {
+        if (i < commandToType.length) {
+          typedCommand.value += commandToType[i]
+          i++
+        } else {
+          clearInterval(intervalId)
+          showCursor.value = false
+          setTimeout(() => {
+            isCommandFinished.value = true
+          }, 300)
+        }
+      }, 100)
+    }, 300)
+  }
+
+  const { isVisible } = useIntersectionObserver(elementRef, startTypingAnimation)
 
   const openLink = (url) => {
     window.open(url, '_blank')
