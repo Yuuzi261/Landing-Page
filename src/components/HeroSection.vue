@@ -30,9 +30,8 @@
 
   const sentences = [
     "Hello, I'm Yuuzi.",
-    'A passionate developer.',
-    'Welcome to my digital space.',
-    'Explore and enjoy your stay! ♡',
+    'こにちは、ゆうじです。',
+    '你好，我是 Yuuzi。'
   ]
 
   const { typedText } = useTypewriter(sentences, {
