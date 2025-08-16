@@ -89,13 +89,15 @@
     }
     50% {
       /* Move to a different position mid-animation for more randomness */
-      transform: translateX(calc(var(--random-x, 1) * 40px)) translateY(calc(var(--random-y, 1) * -60px)) rotate(180deg) scale(1.1);
+      transform: translateX(calc(var(--random-x, 1) * 40px)) translateY(calc(var(--random-y, 1) * -60px)) rotate(180deg)
+        scale(1.1);
     }
     85% {
       opacity: 0.7; /* Start fading out */
     }
     100% {
-      transform: translateX(calc(var(--random-x, 1) * 80px)) translateY(calc(var(--random-y, 1) * -120px)) rotate(360deg) scale(0.8);
+      transform: translateX(calc(var(--random-x, 1) * 80px)) translateY(calc(var(--random-y, 1) * -120px))
+        rotate(360deg) scale(0.8);
       opacity: 0;
     }
   }
