@@ -1,7 +1,7 @@
 <template>
-  <BackgroundEffects />
   <HeroSection />
   <main class="main-content">
+    <BackgroundEffects />
     <div class="container">
       <HeaderSection />
       <InteractiveTerminal />
