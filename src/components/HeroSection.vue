@@ -14,6 +14,12 @@
         <span></span>
       </div>
     </div>
+    <div class="credit" :style="{ opacity: backgroundOpacity }">
+      <a href="https://x.com/amsrntk3" target="_blank" rel="noopener noreferrer">
+        <span class="material-symbols-outlined">copyright</span>
+        <span>甘城なつき/Nachoneko💤</span>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -173,5 +179,42 @@
     .typing-cursor {
       height: 2.2rem;
     }
+  }
+
+  .credit {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 4;
+    transition: opacity 0.3s ease-out;
+  }
+
+  .credit a {
+    display: inline-flex; /* Use inline-flex to fit content */
+    align-items: center;
+    justify-content: center; /* Center content horizontally */
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    text-decoration: none;
+    border-radius: 999px; /* Capsule shape */
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+  }
+
+  .credit a .material-symbols-outlined {
+    font-size: 20px;
+  }
+
+  .credit a:hover {
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+
+  .credit a span {
+    line-height: 1; /* Normalize line height for better alignment */
   }
 </style>
