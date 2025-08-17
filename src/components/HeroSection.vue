@@ -7,7 +7,7 @@
     <div class="overlay" :style="{ opacity: backgroundOpacity }"></div>
     <div class="hero-content" :style="{ opacity: backgroundOpacity }">
       <h1 class="hero-title">
-        <span>{{ typedText }}</span>
+        <span class="typing-text">{{ typedText }}</span>
         <span class="typing-cursor"></span>
       </h1>
       <div class="scroll-down-indicator" @click="scrollToContent">
@@ -116,6 +116,10 @@
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     margin: 0;
     min-height: 120px; /* Reserve space to prevent layout shift */
+  }
+
+  .typing-text {
+    user-select: none;
   }
 
   .typing-cursor {

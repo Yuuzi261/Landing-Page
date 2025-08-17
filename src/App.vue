@@ -10,6 +10,7 @@
       <FooterSection />
     </div>
   </main>
+  <ContextMenuNotification :visible="showNotification" :message="notificationMessage" />
 </template>
 
 <script setup>
@@ -20,11 +21,24 @@
   import AsciiArt from './components/AsciiArt.vue'
   import LinksSection from './components/LinksSection.vue'
   import FooterSection from './components/FooterSection.vue'
+  import ContextMenuNotification from './components/ContextMenuNotification.vue'
 
-  import { onMounted } from 'vue'
+  import { onMounted, ref } from 'vue'
   import firework from 'mouse-firework'
 
+  const showNotification = ref(false)
+  const notificationMessage = ref('')
+
   onMounted(() => {
+    document.addEventListener('contextmenu', event => {
+      event.preventDefault()
+      notificationMessage.value = '(ﾟ∀。)不給你右鍵～'
+      showNotification.value = true
+      setTimeout(() => {
+        showNotification.value = false
+      }, 2000)
+    })
+
     firework({
       excludeElements: ['a'],
       particles: [

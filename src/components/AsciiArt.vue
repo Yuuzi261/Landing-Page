@@ -28,6 +28,7 @@
     margin: 30px 0;
     display: flex;
     justify-content: center;
+    user-select: none;
   }
 
   .ascii-art {
